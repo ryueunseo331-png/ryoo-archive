@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RYOO ARCHIVE</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+<body>
+
+  <!-- 로그인 화면 -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-wrap">
+      <div class="login-hero">
+        <div class="hero-icon"><i class="ti ti-camera"></i></div>
+        <div>
+          <div class="login-title">RYOO ARCHIVE</div>
+          <div class="login-sub">우리의 기록들</div>
+        </div>
+      </div>
+      <div class="login-form">
+        <input type="text" id="loginId" placeholder="아이디" autocomplete="username">
+        <input type="password" id="loginPw" placeholder="비밀번호" autocomplete="current-password">
+        <div class="login-error" id="loginError"></div>
+        <button class="login-btn" onclick="doLogin()">로그인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 메인 앱 -->
+  <div id="mainApp" class="main-app hidden">
+
+    <div class="header">
+      <div class="header-left">
+        <div class="menu-btn" onclick="toggleMenu()">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+        <span class="logo" onclick="showPage('home','menu-home')">RYOO ARCHIVE</span>
+      </div>
+      <div class="header-right">
+        <div class="notif-btn" onclick="toggleNotif()">
+          <i class="ti ti-mail"></i>
+          <div class="notif-dot" id="notifDot"></div>
+        </div>
+        <div class="avatar-sm" id="userAvatar"></div>
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="sidebar" id="sidebar">
+        <div class="menu-item active" id="menu-home" onclick="showPage('home','menu-home')"><i class="ti ti-home"></i> 홈</div>
+        <div class="menu-item" id="menu-myrecord" onclick="showPage('myrecord','menu-myrecord')"><i class="ti ti-calendar"></i> 내 기록</div>
+        <div class="menu-item" id="menu-their" onclick="showPage('their','menu-their')"><i class="ti ti-user"></i> <span id="theirName">상대방의 기록</span></div>
+        <div class="menu-item" id="menu-board" onclick="showPage('board','menu-board')"><i class="ti ti-layout-list"></i> 게시판</div>
+        <div class="menu-item" id="menu-past" onclick="showPage('past','menu-past')"><i class="ti ti-clock"></i> 걸어온 흔적</div>
+        <div class="menu-item" id="menu-future" onclick="showPage('future','menu-future')"><i class="ti ti-map"></i> 걸어갈 흔적</div>
+        <div class="menu-item" id="menu-thoughts" onclick="showPage('thoughts','menu-thoughts')"><i class="ti ti-feather"></i> 떠도는 생각들</div>
+        <div class="menu-item" id="menu-letter" onclick="showPage('letter','menu-letter')"><i class="ti ti-mail"></i> 편지 보내기</div>
+      </div>
+
+      <div class="content" id="mainContent">
+
+        <!-- 홈 -->
+        <div class="page active" id="page-home">
+          <div class="home-hero" id="heroSection">
+            <div class="home-text-side">
+              <div class="home-title">RYOO<br>ARCHIVE</div>
+              <div class="home-dday">함께한 지 <span id="ddayCount">D+0</span></div>
+            </div>
+            <div class="photo-area" id="photoArea" onclick="triggerPhotoUpload()">
+              <img id="heroImg" class="parallax-img" alt="대표 사진">
+              <div class="photo-placeholder" id="photoPlaceholder">
+                <i class="ti ti-camera"></i>
+                <span>사진 눌러서 설정</span>
+              </div>
+              <span class="photo-edit-hint"><i class="ti ti-pencil"></i> 사진 변경</span>
+            </div>
+          </div>
+          <div class="home-recent">
+            <div class="section-label">최근 기록</div>
+            <div class="recent-grid" id="recentGrid">
+              <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
+              <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
+              <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
+              <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
+            </div>
+            <div class="recent-entries" id="recentEntries"></div>
+          </div>
+        </div>
+
+        <!-- 내 기록 -->
+        <div class="page" id="page-myrecord">
+          <div class="page-header">
+            <div class="page-title">내 기록</div>
+            <button class="add-btn" onclick="openAddRecord()"><i class="ti ti-plus"></i> 기록 추가</button>
+          </div>
+          <div class="cal-nav">
+            <span class="cal-arrow" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></span>
+            <span class="cal-month" id="calMonthLabel"></span>
+            <span class="cal-arrow" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></span>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div id="dayDetail" class="day-detail hidden"></div>
+        </div>
+
+        <!-- 상대방 기록 -->
+        <div class="page" id="page-their">
+          <div class="page-title" id="theirPageTitle">상대방의 기록</div>
+          <div class="cal-nav">
+            <span class="cal-arrow" onclick="changeMonthTheir(-1)"><i class="ti ti-chevron-left"></i></span>
+            <span class="cal-month" id="calMonthLabelTheir"></span>
+            <span class="cal-arrow" onclick="changeMonthTheir(1)"><i class="ti ti-chevron-right"></i></span>
+          </div>
+          <div class="cal-grid" id="calGridTheir"></div>
+          <div id="dayDetailTheir" class="day-detail hidden"></div>
+        </div>
+
+        <!-- 게시판 -->
+        <div class="page" id="page-board">
+          <div class="page-header">
+            <div class="page-title">게시판</div>
+            <button class="add-btn" onclick="openWritePost()"><i class="ti ti-pencil"></i> 글 쓰기</button>
+          </div>
+          <div id="boardList"></div>
+        </div>
+
+        <!-- 걸어온 흔적 -->
+        <div class="page" id="page-past">
+          <div class="page-header">
+            <div class="page-title">걸어온 흔적</div>
+            <button class="add-btn" onclick="openAddTimeline('past')"><i class="ti ti-plus"></i> 추가</button>
+          </div>
+          <div class="tl-wrap" id="pastTimeline"></div>
+        </div>
+
+        <!-- 걸어갈 흔적 -->
+        <div class="page" id="page-future">
+          <div class="page-header">
+            <div class="page-title">걸어갈 흔적</div>
+            <button class="add-btn" onclick="openAddTimeline('future')"><i class="ti ti-plus"></i> 추가</button>
+          </div>
+          <div id="futureList"></div>
+        </div>
+
+        <!-- 떠도는 생각들 -->
+        <div class="page" id="page-thoughts">
+          <div class="thoughts-header">
+            <div class="thoughts-month" id="thoughtsMonthLabel"></div>
+            <div style="display:flex;gap:4px;">
+              <span class="cal-arrow" onclick="changeThoughtsMonth(-1)"><i class="ti ti-chevron-left"></i></span>
+              <span class="cal-arrow" onclick="changeThoughtsMonth(1)"><i class="ti ti-chevron-right"></i></span>
+            </div>
+          </div>
+          <div class="thoughts-canvas" id="thoughtsCanvas"></div>
+          <div class="thoughts-input">
+            <input type="text" id="thoughtInput" placeholder="지금 떠오르는 생각을 적어보세요..." onkeydown="if(event.key==='Enter')addThought()">
+            <button onclick="addThought()">남기기</button>
+          </div>
+        </div>
+
+        <!-- 편지 보내기 -->
+        <div class="page" id="page-letter">
+          <div class="letter-tabs">
+            <div class="letter-tab active" onclick="switchLetterTab(this,'inbox')">받은 편지함</div>
+            <div class="letter-tab" onclick="switchLetterTab(this,'write')">편지 쓰기</div>
+          </div>
+          <div class="letter-body-pad" id="letter-inbox">
+            <div id="letterList"></div>
+          </div>
+          <div class="letter-body-pad hidden" id="letter-write">
+            <div class="letter-compose-wrap">
+              <div class="letter-paper">
+                <div class="letter-salutation" id="letterSalutation"></div>
+                <textarea id="letterContent" placeholder="편지를 천천히 써보세요..."></textarea>
+              </div>
+              <div class="letter-footer">
+                <span class="letter-to" id="letterFrom"></span>
+                <button class="send-btn" onclick="sendLetter()"><i class="ti ti-send"></i> 보내기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 알림 -->
+        <div class="page" id="page-notif">
+          <div class="page-title">알림</div>
+          <div id="notifList"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 모달: 기록 추가 -->
+  <div class="modal-bg hidden" id="modal-record">
+    <div class="modal">
+      <div class="modal-title">기록 추가</div>
+      <label>날짜</label>
+      <input type="date" id="recordDate">
+      <label>사진</label>
+      <input type="file" id="recordPhotos" accept="image/*" multiple>
+      <label>일기</label>
+      <textarea id="recordDiary" placeholder="오늘의 기억을 남겨보세요..."></textarea>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal('modal-record')">취소</button>
+        <button class="btn-save" onclick="saveRecord()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 모달: 글 쓰기 -->
+  <div class="modal-bg hidden" id="modal-post">
+    <div class="modal">
+      <div class="modal-title">글 쓰기</div>
+      <label>제목</label>
+      <input type="text" id="postTitle" placeholder="제목을 입력하세요">
+      <label>내용</label>
+      <textarea id="postContent" placeholder="내용을 입력하세요..."></textarea>
+      <div class="modal-check">
+        <input type="checkbox" id="postNotice">
+        <label for="postNotice" style="font-size:13px;color:var(--color-text-secondary);cursor:pointer;">공지로 설정</label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal('modal-post')">취소</button>
+        <button class="btn-save" onclick="savePost()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 모달: 연표 추가 -->
+  <div class="modal-bg hidden" id="modal-timeline">
+    <div class="modal">
+      <div class="modal-title" id="timelineModalTitle">흔적 추가</div>
+      <label>날짜 (예: 2024. 03)</label>
+      <input type="text" id="tlDate" placeholder="2024. 03">
+      <label>제목</label>
+      <input type="text" id="tlTitle" placeholder="제목">
+      <label>설명</label>
+      <input type="text" id="tlDesc" placeholder="짧은 설명 (선택)">
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal('modal-timeline')">취소</button>
+        <button class="btn-save" onclick="saveTimeline()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="heroFileInput" accept="image/*" style="display:none" onchange="loadHeroPhoto(event)">
+
+  <script src="app.js"></script>
+</body>
+</html>
