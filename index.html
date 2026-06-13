@@ -13,10 +13,9 @@
   <div id="loginScreen" class="login-screen">
     <div class="login-wrap">
       <div class="login-hero">
-        <div class="hero-icon"><i class="ti ti-camera"></i></div>
         <div>
           <div class="login-title">RYOO ARCHIVE</div>
-          <div class="login-sub">우리의 기록들</div>
+          <div class="login-sub">Croyez-vous en l'éternité?</div>
         </div>
       </div>
       <div class="login-form">
@@ -39,6 +38,7 @@
         <span class="logo" onclick="showPage('home','menu-home')">RYOO ARCHIVE</span>
       </div>
       <div class="header-right">
+        <span class="dday-badge" id="ddayCount">D+0</span>
         <div class="notif-btn" onclick="toggleNotif()">
           <i class="ti ti-mail"></i>
           <div class="notif-dot" id="notifDot"></div>
@@ -52,6 +52,7 @@
         <div class="menu-item active" id="menu-home" onclick="showPage('home','menu-home')"><i class="ti ti-home"></i> 홈</div>
         <div class="menu-item" id="menu-myrecord" onclick="showPage('myrecord','menu-myrecord')"><i class="ti ti-calendar"></i> 내 기록</div>
         <div class="menu-item" id="menu-their" onclick="showPage('their','menu-their')"><i class="ti ti-user"></i> <span id="theirName">상대방의 기록</span></div>
+        <div class="menu-item" id="menu-photos" onclick="showPage('photos','menu-photos')"><i class="ti ti-layout-grid"></i> 모든 사진</div>
         <div class="menu-item" id="menu-board" onclick="showPage('board','menu-board')"><i class="ti ti-layout-list"></i> 게시판</div>
         <div class="menu-item" id="menu-past" onclick="showPage('past','menu-past')"><i class="ti ti-clock"></i> 걸어온 흔적</div>
         <div class="menu-item" id="menu-future" onclick="showPage('future','menu-future')"><i class="ti ti-map"></i> 걸어갈 흔적</div>
@@ -63,29 +64,31 @@
 
         <!-- 홈 -->
         <div class="page active" id="page-home">
-          <div class="home-hero" id="heroSection">
-            <div class="home-text-side">
-              <div class="home-title">RYOO<br>ARCHIVE</div>
-              <div class="home-dday">함께한 지 <span id="ddayCount">D+0</span></div>
-            </div>
-            <div class="photo-area" id="photoArea" onclick="triggerPhotoUpload()">
-              <img id="heroImg" class="parallax-img" alt="대표 사진">
-              <div class="photo-placeholder" id="photoPlaceholder">
-                <i class="ti ti-camera"></i>
-                <span>사진 눌러서 설정</span>
+          <div class="home-inner">
+            <div class="home-hero" id="heroSection">
+              <div class="home-text-side">
+                <div class="home-title">RYOO<br>ARCHIVE</div>
+                <div class="home-quote">Croyez-vous en l'éternité?<br><span>Je crois.</span></div>
               </div>
-              <span class="photo-edit-hint"><i class="ti ti-pencil"></i> 사진 변경</span>
+              <div class="photo-area" id="photoArea" onclick="triggerPhotoUpload()">
+                <img id="heroImg" class="parallax-img" alt="대표 사진">
+                <div class="photo-placeholder" id="photoPlaceholder">
+                  <i class="ti ti-camera"></i>
+                  <span>사진 눌러서 설정</span>
+                </div>
+                <span class="photo-edit-hint"><i class="ti ti-pencil"></i> 사진 변경</span>
+              </div>
             </div>
-          </div>
-          <div class="home-recent">
-            <div class="section-label">최근 기록</div>
-            <div class="recent-grid" id="recentGrid">
-              <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
-              <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
-              <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
-              <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
+            <div class="home-recent">
+              <div class="section-label">최근 기록</div>
+              <div class="recent-grid" id="recentGrid">
+                <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
+                <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
+                <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
+                <div class="recent-thumb empty"><i class="ti ti-photo"></i></div>
+              </div>
+              <div class="recent-entries" id="recentEntries"></div>
             </div>
-            <div class="recent-entries" id="recentEntries"></div>
           </div>
         </div>
 
@@ -95,25 +98,54 @@
             <div class="page-title">내 기록</div>
             <button class="add-btn" onclick="openAddRecord()"><i class="ti ti-plus"></i> 기록 추가</button>
           </div>
-          <div class="cal-nav">
-            <span class="cal-arrow" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></span>
-            <span class="cal-month" id="calMonthLabel"></span>
-            <span class="cal-arrow" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></span>
+          <div class="cal-layout">
+            <div class="cal-left">
+              <div class="cal-nav">
+                <span class="cal-arrow" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></span>
+                <span class="cal-month" id="calMonthLabel"></span>
+                <span class="cal-arrow" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></span>
+              </div>
+              <div class="cal-grid" id="calGrid"></div>
+            </div>
+            <div class="cal-right">
+              <div id="dayDetail" class="day-detail hidden"></div>
+              <div id="dayDetailEmpty" class="day-detail-empty">날짜를 선택하면<br>기록이 여기에 표시돼요</div>
+            </div>
           </div>
-          <div class="cal-grid" id="calGrid"></div>
-          <div id="dayDetail" class="day-detail hidden"></div>
         </div>
 
         <!-- 상대방 기록 -->
         <div class="page" id="page-their">
-          <div class="page-title" id="theirPageTitle">상대방의 기록</div>
-          <div class="cal-nav">
-            <span class="cal-arrow" onclick="changeMonthTheir(-1)"><i class="ti ti-chevron-left"></i></span>
-            <span class="cal-month" id="calMonthLabelTheir"></span>
-            <span class="cal-arrow" onclick="changeMonthTheir(1)"><i class="ti ti-chevron-right"></i></span>
+          <div class="page-header">
+            <div class="page-title" id="theirPageTitle">상대방의 기록</div>
           </div>
-          <div class="cal-grid" id="calGridTheir"></div>
-          <div id="dayDetailTheir" class="day-detail hidden"></div>
+          <div class="cal-layout">
+            <div class="cal-left">
+              <div class="cal-nav">
+                <span class="cal-arrow" onclick="changeMonthTheir(-1)"><i class="ti ti-chevron-left"></i></span>
+                <span class="cal-month" id="calMonthLabelTheir"></span>
+                <span class="cal-arrow" onclick="changeMonthTheir(1)"><i class="ti ti-chevron-right"></i></span>
+              </div>
+              <div class="cal-grid" id="calGridTheir"></div>
+            </div>
+            <div class="cal-right">
+              <div id="dayDetailTheir" class="day-detail hidden"></div>
+              <div id="dayDetailTheirEmpty" class="day-detail-empty">날짜를 선택하면<br>기록이 여기에 표시돼요</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 모든 사진 -->
+        <div class="page" id="page-photos">
+          <div class="page-header">
+            <div class="page-title">모든 사진</div>
+            <div class="photos-filter">
+              <span class="filter-tag active" onclick="setPhotoFilter(this,'all')">전체</span>
+              <span class="filter-tag" id="filterMyTag" onclick="setPhotoFilter(this,'my')">내 사진</span>
+              <span class="filter-tag" id="filterTheirTag" onclick="setPhotoFilter(this,'their')">상대방 사진</span>
+            </div>
+          </div>
+          <div class="photos-grid" id="photosGrid"></div>
         </div>
 
         <!-- 게시판 -->
@@ -241,6 +273,24 @@
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closeModal('modal-timeline')">취소</button>
         <button class="btn-save" onclick="saveTimeline()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 라이트박스 -->
+  <div class="lightbox hidden" id="lightbox">
+    <div class="lb-inner">
+      <span class="lb-counter" id="lbCounter"></span>
+      <span class="lb-close" onclick="closeLb()"><i class="ti ti-x"></i></span>
+      <span class="lb-arrow lb-prev" id="lbPrev" onclick="moveLb(-1)"><i class="ti ti-chevron-left"></i></span>
+      <div class="lb-img-wrap">
+        <img id="lbImg" class="lb-img" alt="사진" style="display:none">
+        <div class="lb-placeholder" id="lbPlaceholder"><i class="ti ti-photo"></i></div>
+      </div>
+      <span class="lb-arrow lb-next" id="lbNext" onclick="moveLb(1)"><i class="ti ti-chevron-right"></i></span>
+      <div class="lb-info">
+        <div class="lb-who" id="lbWho"></div>
+        <div class="lb-date" id="lbDate"></div>
       </div>
     </div>
   </div>

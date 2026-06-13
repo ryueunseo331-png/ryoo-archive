@@ -109,6 +109,7 @@ function showPage(name, menuId) {
   document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   if (menuId) { const el = document.getElementById(menuId); if (el) el.classList.add('active'); }
+  if (name === 'photos') renderAllPhotos();
 }
 
 function toggleNotif() {
@@ -212,6 +213,10 @@ function selectDay(el, dateStr, who) {
 function renderDayDetail(dateStr, record, detailId, canEdit) {
   const detail = document.getElementById(detailId);
   detail.classList.remove('hidden');
+  // empty 메시지 숨기기
+  const emptyId = detailId === 'dayDetail' ? 'dayDetailEmpty' : 'dayDetailTheirEmpty';
+  const emptyEl = document.getElementById(emptyId);
+  if (emptyEl) emptyEl.style.display = 'none';
   const displayDate = dateStr.replace(/(\d{4})-(\d{2})-(\d{2})/, '$2월 $3일');
   const photos = record?.photos || [];
   const diary = record?.diary || '';
@@ -637,6 +642,106 @@ function renderNotifs() {
   const hasUnread = notifs.some(n => !n.read);
   document.getElementById('notifDot').style.display = hasUnread ? 'block' : 'none';
 }
+
+// =====================
+// 모든 사진
+// =====================
+let allPhotosFiltered = [];
+let lbIdx = 0;
+let currentPhotoFilter = 'all';
+
+function renderAllPhotos() {
+  const partner = ACCOUNTS[currentUser].partner;
+  const myRecords = getData('records_' + currentUser).map(r => ({...r, who: currentUser}));
+  const theirRecords = getData('records_' + partner).map(r => ({...r, who: partner}));
+  const all = [...myRecords, ...theirRecords].sort((a,b) => b.date.localeCompare(a.date));
+
+  // 필터 이름 업데이트
+  document.getElementById('filterMyTag').textContent = currentUser + ' 사진';
+  document.getElementById('filterTheirTag').textContent = partner + ' 사진';
+
+  if (currentPhotoFilter === 'my') allPhotosFiltered = all.filter(r => r.who === currentUser);
+  else if (currentPhotoFilter === 'their') allPhotosFiltered = all.filter(r => r.who === partner);
+  else allPhotosFiltered = all;
+
+  // 사진 있는 기록만, 각 사진을 개별 항목으로 펼치기
+  const photoItems = [];
+  allPhotosFiltered.forEach(r => {
+    if (r.photos && r.photos.length > 0) {
+      r.photos.forEach(p => photoItems.push({ src: p, who: r.who, date: r.date }));
+    }
+  });
+
+  const grid = document.getElementById('photosGrid');
+  grid.innerHTML = '';
+  if (photoItems.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:40px 0;text-align:center;font-size:13px;color:var(--text-tertiary);">아직 사진이 없어요.</div>';
+    return;
+  }
+  photoItems.forEach((item, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'photo-cell';
+    const d = item.date.replace(/(\d{4})-(\d{2})-(\d{2})/, '$2월 $3일');
+    cell.innerHTML = `<img src="${item.src}" alt="사진"><div class="photo-cell-overlay"><div class="photo-cell-who">${item.who}</div><div class="photo-cell-date">${d}</div></div>`;
+    cell.onclick = () => openLb(i, photoItems);
+    grid.appendChild(cell);
+  });
+}
+
+function setPhotoFilter(el, f) {
+  document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentPhotoFilter = f;
+  renderAllPhotos();
+}
+
+// =====================
+// 라이트박스
+// =====================
+let lbItems = [];
+
+function openLb(idx, items) {
+  lbItems = items;
+  lbIdx = idx;
+  updateLb();
+  document.getElementById('lightbox').classList.remove('hidden');
+}
+
+function closeLb() {
+  document.getElementById('lightbox').classList.add('hidden');
+}
+
+function moveLb(dir) {
+  lbIdx = Math.max(0, Math.min(lbItems.length - 1, lbIdx + dir));
+  updateLb();
+}
+
+function updateLb() {
+  const item = lbItems[lbIdx];
+  const img = document.getElementById('lbImg');
+  const placeholder = document.getElementById('lbPlaceholder');
+  if (item.src) {
+    img.src = item.src;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    placeholder.style.display = 'flex';
+  }
+  const d = item.date ? item.date.replace(/(\d{4})-(\d{2})-(\d{2})/, '$2월 $3일') : '';
+  document.getElementById('lbWho').textContent = item.who || '';
+  document.getElementById('lbDate').textContent = d;
+  document.getElementById('lbCounter').textContent = (lbIdx + 1) + ' / ' + lbItems.length;
+  document.getElementById('lbPrev').classList.toggle('disabled', lbIdx === 0);
+  document.getElementById('lbNext').classList.toggle('disabled', lbIdx === lbItems.length - 1);
+}
+
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('lightbox').classList.contains('hidden')) return;
+  if (e.key === 'ArrowLeft') moveLb(-1);
+  if (e.key === 'ArrowRight') moveLb(1);
+  if (e.key === 'Escape') closeLb();
+});
 
 // =====================
 // 모달

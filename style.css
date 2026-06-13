@@ -32,16 +32,8 @@ body {
 }
 .login-wrap { display: flex; flex-direction: column; align-items: center; gap: 0; }
 .login-hero { display: flex; align-items: center; gap: 18px; margin-bottom: 36px; }
-.hero-icon {
-  width: 64px; height: 64px;
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius-lg);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px; color: var(--text-tertiary);
-  background: var(--bg-secondary);
-}
 .login-title { font-size: 20px; font-weight: 500; letter-spacing: 0.08em; }
-.login-sub { font-size: 13px; color: var(--text-tertiary); margin-top: 4px; }
+.login-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 6px; font-style: italic; letter-spacing: 0.02em; }
 .login-form { width: 280px; display: flex; flex-direction: column; gap: 10px; }
 .login-form input {
   font-size: 13px; padding: 10px 12px;
@@ -133,12 +125,12 @@ body {
 }
 .add-btn:hover { color: var(--text); }
 
-/* 홈 */
-.home-hero {
-  display: flex; align-items: stretch;
-  border-bottom: 0.5px solid var(--border);
-  position: relative; overflow: hidden;
-}
+/* D+뱃지 */
+.dday-badge { font-size: 12px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.04em; }
+
+/* 홈 inner */
+.home-inner { max-width: 640px; margin: 0 auto; }
+.home-hero { display: flex; align-items: stretch; border-bottom: 0.5px solid var(--border); border-top: 0.5px solid var(--border); }
 .home-text-side {
   width: 200px; flex-shrink: 0;
   padding: 32px 24px;
@@ -146,9 +138,48 @@ body {
   border-right: 0.5px solid var(--border);
   background: var(--bg); z-index: 2;
 }
-.home-title { font-size: 28px; font-weight: 500; letter-spacing: 0.06em; line-height: 1.2; margin-bottom: 12px; }
-.home-dday { font-size: 12px; color: var(--text-secondary); }
-.home-dday span { font-weight: 500; color: var(--text); }
+.home-title { font-size: 28px; font-weight: 500; letter-spacing: 0.06em; line-height: 1.2; margin-bottom: 16px; }
+.home-quote { font-size: 11px; color: var(--text-tertiary); font-style: italic; line-height: 2; letter-spacing: 0.02em; }
+.home-quote span { display: block; color: var(--text-secondary); }
+
+/* 모든 사진 */
+.photos-filter { display: flex; gap: 6px; }
+.filter-tag { font-size: 12px; padding: 4px 10px; border: 0.5px solid var(--border); border-radius: 20px; color: var(--text-secondary); cursor: pointer; }
+.filter-tag.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+.photos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 0 20px 20px; }
+.photo-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; background: var(--bg-secondary); }
+.photo-cell img { width: 100%; height: 100%; object-fit: cover; }
+.photo-cell i { font-size: 20px; color: var(--text-tertiary); }
+.photo-cell:hover .photo-cell-overlay { opacity: 1; }
+.photo-cell-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.15s; display: flex; flex-direction: column; justify-content: flex-end; padding: 8px; }
+.photo-cell-who { font-size: 11px; color: #fff; font-weight: 500; }
+.photo-cell-date { font-size: 10px; color: rgba(255,255,255,0.8); margin-top: 1px; }
+
+/* 라이트박스 */
+.lightbox {
+  position: fixed; inset: 0;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.lightbox.hidden { display: none; }
+.lb-inner { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+.lb-img { max-width: 70vw; max-height: 65vh; object-fit: contain; border-radius: var(--radius-md); box-shadow: 0 8px 40px rgba(0,0,0,0.12); }
+.lb-placeholder { width: 260px; height: 260px; border-radius: var(--radius-lg); background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; }
+.lb-placeholder i { font-size: 44px; color: var(--text-tertiary); }
+.lb-info { text-align: center; }
+.lb-who { font-size: 13px; font-weight: 500; color: var(--text); }
+.lb-date { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+.lb-counter { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--text-tertiary); letter-spacing: 0.06em; }
+.lb-close { position: absolute; top: 16px; right: 20px; color: var(--text-secondary); cursor: pointer; font-size: 18px; }
+.lb-close:hover { color: var(--text); }
+.lb-arrow { position: absolute; top: 50%; transform: translateY(-50%); color: var(--text-secondary); cursor: pointer; font-size: 20px; padding: 10px; border-radius: 50%; transition: all 0.15s; }
+.lb-arrow:hover { color: var(--text); background: rgba(0,0,0,0.06); }
+.lb-prev { left: 16px; }
+.lb-next { right: 16px; }
+.lb-arrow.disabled { opacity: 0.2; pointer-events: none; }
 .photo-area {
   flex: 1; position: relative; overflow: hidden;
   min-height: 200px; cursor: pointer;
@@ -196,10 +227,27 @@ body {
 .recent-entry-date { font-size: 11px; color: var(--text-tertiary); flex-shrink: 0; margin-left: 12px; }
 .recent-entry-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* 캘린더 레이아웃 — 데스크탑 좌우 분할 */
+.cal-layout { display: flex; min-height: 400px; }
+.cal-left { flex-shrink: 0; width: 420px; padding-bottom: 20px; border-right: 0.5px solid var(--border); }
+.cal-right { flex: 1; padding: 20px; overflow-y: auto; }
+.day-detail-empty {
+  height: 100%; min-height: 200px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--text-tertiary);
+  text-align: center; line-height: 1.8;
+}
+@media (max-width: 700px) {
+  .cal-layout { flex-direction: column; }
+  .cal-left { width: 100%; border-right: none; border-bottom: 0.5px solid var(--border); }
+  .cal-right { padding: 16px 20px; }
+  .day-detail-empty { display: none; }
+}
+
 /* 캘린더 */
 .cal-nav {
   display: flex; align-items: center; gap: 10px;
-  padding: 0 20px 12px;
+  padding: 20px 20px 12px;
 }
 .cal-month { font-size: 13px; font-weight: 500; }
 .cal-arrow { cursor: pointer; color: var(--text-secondary); padding: 2px 4px; font-size: 15px; }
@@ -221,7 +269,7 @@ body {
 .cal-day.today { font-weight: 500; color: var(--text); }
 
 /* 날짜 상세 */
-.day-detail { margin: 16px 20px; border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.day-detail { border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
 .day-detail-header {
   padding: 12px 14px; border-bottom: 0.5px solid var(--border);
   display: flex; justify-content: space-between; align-items: center;
